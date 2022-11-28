@@ -5,11 +5,12 @@ import {
   notificationProvider,
   ReadyPage,
   ErrorComponent,
-  AuthPage,
 } from "@pankod/refine-antd";
 import routerProvider from "@pankod/refine-nextjs-router";
 import dataProvider from "@pankod/refine-simple-rest";
 require("antd/dist/antd.less");
+// import { PageLayout } from "../src/components/login/PageLayout"
+import { loginComponent } from "@components/login/index";
 
 import {
   Title,
@@ -19,14 +20,21 @@ import {
   Layout,
   OffLayoutArea,
 } from "@components/layout";
-import { authProvider } from "src/authProvider";
+// import { authProvider } from "src/authProvider";
 import { PostList, PostCreate, PostEdit, PostShow } from "@components/posts";
+
+import { PublicClientApplication } from "@azure/msal-browser";
+import { MsalProvider } from "@azure/msal-react";
+import { authProvide } from "../src/authProvider";
+const msalInstance = new PublicClientApplication(authProvide);
 
 const API_URL = "https://api.fake-rest.refine.dev";
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (
-    <Refine
+    <>
+    <MsalProvider instance={msalInstance}>
+      <Refine
       routerProvider={routerProvider}
       dataProvider={dataProvider(API_URL)}
       notificationProvider={notificationProvider}
@@ -38,11 +46,10 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
       Footer={Footer}
       Layout={Layout}
       OffLayoutArea={OffLayoutArea}
-      authProvider={authProvider}
-      LoginPage={AuthPage}
+      LoginPage={loginComponent}
       resources={[
         {
-          name: "posts",
+          name: "/",
           list: PostList,
           create: PostCreate,
           edit: PostEdit,
@@ -52,6 +59,8 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
     >
       <Component {...pageProps} />
     </Refine>
+    </MsalProvider>
+    </>
   );
 }
 
