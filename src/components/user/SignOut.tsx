@@ -5,7 +5,7 @@ import { Dropdown, Menu } from "@pankod/refine-antd";
 /**
  * Renders a sign-out button
  */
-export const SignOutButton = () => {
+export const SignOut = () => {
     const { instance } = useMsal();
 
     const handleLogout = (logoutType: string) => {

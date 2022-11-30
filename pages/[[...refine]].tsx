@@ -7,8 +7,13 @@ import {
 import dataProvider from "@pankod/refine-simple-rest";
 const API_URL = "https://api.fake-rest.refine.dev";
 
+ 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { resource, action, id } = handleRefineParams(context.params?.refine);
+
+  // console.log(resource.slice(resource.lastIndexOf("/") + 1));
+  // console.log(resource.lastIndexOf("/"));
+
 
   try {
     if (resource && action === "show" && id) {
@@ -16,6 +21,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         resource: resource.slice(resource.lastIndexOf("/") + 1),
         id,
       });
+      // console.log("2",resource.slice(resource.lastIndexOf("/") + 1));
+      // console.log("3",resource.lastIndexOf("/"));
 
       return {
         props: {
@@ -44,7 +51,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default NextRouteComponent.bind({ initialRoute: "/login" });;
+// export default NextRouteComponent;
+export default NextRouteComponent.bind({ initialRoute: "/login" });
 
 /**
  * To define a custom initial route for refine to redirect and start with:

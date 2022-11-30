@@ -4,18 +4,18 @@
  * Licensed under the MIT License.
  */
 
-import { LogLevel } from "@azure/msal-browser";
+import { Configuration, LogLevel } from "@azure/msal-browser";
 
 /**
  * Configuration object to be passed to MSAL instance on creation. 
  * For a full list of MSAL.js configuration parameters, visit:
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md 
  */
-export const authProvide = {
+export const msalConfig: Configuration = {
     auth: {
-        clientId: "667d68b2-9fd6-4daa-98a0-77d94b3a4161",
+        clientId: `${process.env.NEXT_PUBLIC_APP_AZURE_AAD_CLIENT_ID}`,
         authority: "https://login.microsoftonline.com/common",
-        redirectUri: "http://localhost:3000/"
+        redirectUri: "http://localhost:3000/",
     },
     cache: {
         cacheLocation: "sessionStorage", // This configures where your cache will be stored
@@ -60,6 +60,11 @@ export const loginRequest = {
  * Add here the scopes to request when obtaining an access token for MS Graph API. For more information, see:
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/resources-and-scopes.md
  */
+
+//  export const tokenRequest = {
+//     scopes: ["Mail.Read"] // Replace ... with your custom scopes
+// };
+
 export const graphConfig = {
     graphMeEndpoint: "https://graph.microsoft.com/v1.0/me"
 };

@@ -1,64 +1,54 @@
-import React, { useState } from "react";
-import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
-import { loginRequest } from "../../authProvider";
-import { PageLayout } from "./PageLayout";
-import { ProfileData } from "./ProfileData";
-import { callMsGraph } from "../../graph";
-import { Button, Icon } from "@pankod/refine-antd";
-// import "./styles/App.css";
-import { type } from "os";
+import React from "react";
+import { useLogin } from "@pankod/refine-core";
+import { AntdLayout, Button } from "@pankod/refine-antd";
 
-/**
- * Renders information about the signed-in user or a button to retrieve data about the user
- */
-const ProfileContent = () => {
-    const { instance, accounts } = useMsal();
-    const [graphData, setGraphData] = useState(null);
+// type LoginVariables = {
+//     username: string;
+//     email: string;
+// };
+export const LoginPage = () => {
+    const SignInButton = () => {
+        const { mutate: login } = useLogin();
 
-    function RequestProfileData() {
-        // Silently acquires an access token which is then attached to a request for MS Graph data
-        instance.acquireTokenSilent({
-            ...loginRequest,
-            account: accounts[0]
-        }).then((response: { accessToken: string; }) => {
-            callMsGraph(response.accessToken).then(response => setGraphData(response));
-        });
-    }
+        // function onSubmit(values: LoginVariables) {
+        //     login(values);
+        // } 
+        // onSubmit = (values: LoginVariables) => {
+        //     login(values);
+        // };
+        // console.log(values);
+        return (
+            <Button
+                type="primary"
+                size="large"
+                block
+                onClick={(values) => {
+                    login(values);
+                }}
+            >
+                Sign in
+            </Button>
+        );
+    };
 
-    return (        
-            <div>
-                <h5>Welcome {accounts[0].name}</h5>
-                {graphData ? 
-                    <ProfileData graphData={graphData} />
-                    :
-                    <Button type="primary" onClick={RequestProfileData}>Request Profile Information</Button>
-                }
+    return (
+        <AntdLayout
+            style={{
+                background: `radial-gradient(50% 50% at 50% 50%, #63386A 0%, #310438 100%)`,
+                backgroundSize: "cover",
+            }}
+        >
+            <div style={{ height: "100vh", display: "flex" }}>
+                <div style={{ maxWidth: "200px", margin: "auto" }}>
+                    <div style={{ marginBottom: "28px" }}>
+                        <img src="./refine.svg" alt="Refine" />
+                    </div>
+                    <SignInButton />
+                </div>
             </div>
+        </AntdLayout>
     );
+
 };
 
-/**
- * If a user is authenticated the ProfileContent component above is rendered. Otherwise a message indicating a user is not authenticated is rendered.
- */
-const MainContent = () => {    
-    return (
-        <div className="App">
-            <AuthenticatedTemplate>
-                <ProfileContent />
-            </AuthenticatedTemplate>
-
-            <UnauthenticatedTemplate>
-                <h5 className="card-title">Please sign-in to see your profile information.</h5>
-            </UnauthenticatedTemplate>
-        </div>
-    );
-};
-
-export const loginComponent: React.FC = () => {
-    return (
-        <PageLayout>
-            <MainContent />
-        </PageLayout>
-    );
-}
-
+export default LoginPage;
