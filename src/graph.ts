@@ -8,6 +8,8 @@ export async function callMsGraph(accessToken: string) {
     const bearer = `Bearer ${accessToken}`;
 
     headers.append("Authorization", bearer);
+    headers.append("Access-Control-Allow-Origin", "*");
+    headers.append("Access-Control-Allow-Headers", "X-Requested-With");
 
     const options = {
         method: "GET",

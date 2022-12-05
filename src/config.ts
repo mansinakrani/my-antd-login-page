@@ -16,7 +16,8 @@ export const msalConfig: Configuration = {
     auth: {
         clientId: `${process.env.NEXT_PUBLIC_APP_AZURE_AAD_CLIENT_ID}`,
         authority: "https://login.microsoftonline.com/common/",
-        redirectUri: "http://localhost:3000/user",
+        redirectUri: "http://localhost:3000/posts",
+        navigateToLoginRequestUrl: true,
     },
     cache: {
         cacheLocation: "sessionStorage", // This configures where your cache will be stored

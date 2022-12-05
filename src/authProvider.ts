@@ -2,7 +2,7 @@ import { AccountInfo, SilentRequest } from "@azure/msal-browser";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
 import { AuthProvider } from "@pankod/refine-core";
 import { request } from "http";
-import { TOKEN_KEY } from "pages/App";
+import { TOKEN_KEY } from "pages/_app";
 import { loginRequest, msalInstance } from "./config";
 
 // const isAuthenticated = useIsAuthenticated()
@@ -35,7 +35,7 @@ if (accounts.length === 0) {
       if (accounts) {
         const token = await msalInstance.acquireTokenSilent({
             scopes: ["User.Read"],
-            redirectUri: "http://localhost:3000/user"
+            redirectUri: "http://localhost:3000/"
         });
         localStorage.setItem(TOKEN_KEY, token.accessToken)
         return Promise.resolve()
