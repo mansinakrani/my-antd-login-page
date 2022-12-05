@@ -4,7 +4,7 @@ import {
   UnauthenticatedTemplate,
   useMsal,
 } from '@azure/msal-react'
-import { loginRequest } from '../../config'
+import { loginRequest, msalInstance } from '../../config'
 // import { PageLayout } from "../login/PageLayout";
 import { UserProfile } from './Profile'
 import { callMsGraph } from '../../graph'
@@ -27,7 +27,7 @@ const ProfileContent = () => {
 
   function RequestProfileData() {
     // Silently acquires an access token which is then attached to a request for MS Graph data
-    instance
+    msalInstance
       .acquireTokenSilent({
         ...loginRequest,
         account: accounts[0],

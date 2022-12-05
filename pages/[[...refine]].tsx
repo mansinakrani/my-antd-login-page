@@ -7,7 +7,7 @@ import {
 
 import dataProvider from "@pankod/refine-simple-rest";
 import { API_URL } from "../src/constants";
-import { authProvider } from "src/authProvider";
+import { authProvider } from "../src/authProvider";
 
 export const getServerSideProps: GetServerSideProps<
     { initialData?: unknown },

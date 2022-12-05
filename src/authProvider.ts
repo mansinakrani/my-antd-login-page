@@ -1,124 +1,58 @@
-// import { useMsal } from "@azure/msal-react"
-// import { AuthProvider } from "@pankod/refine-core"
-import { TOKEN_KEY } from "pages/_app"
-import { loginRequest, msalConfig } from "./config";
-import axios,{ AxiosRequestConfig } from "axios";
-import {
-  EventType,
-  PublicClientApplication,
-  AccountInfo,
-  EventPayload,
-  SilentRequest,
-} from '@azure/msal-browser'
+import { AccountInfo, SilentRequest } from "@azure/msal-browser";
+import { useIsAuthenticated, useMsal } from "@azure/msal-react";
+import { AuthProvider } from "@pankod/refine-core";
+import { request } from "http";
+import { TOKEN_KEY } from "pages/App";
+import { loginRequest, msalInstance } from "./config";
 
-// const { accounts } = useMsal()
+// const isAuthenticated = useIsAuthenticated()
+// const { instance, accounts } = useMsal();
 
-// if (inProgress === 'login' || inProgress === 'handleRedirect') {
-//   return <div>Loading...</div>
-// }
-// const { accounts } = useMsal()
-// const account: AccountInfo = accounts[0]
-
-// const account: AccountInfo = instance.getAllAccounts();
-
-// const request: SilentRequest = {
+// export const account: AccountInfo = accounts[0];
+// export const request: SilentRequest = {
 //   ...loginRequest,
 //   account,
 // }
-export const axiosInstance = axios.create()
+const accounts: AccountInfo[] = msalInstance.getAllAccounts();
 
-axiosInstance.interceptors.request.use(
-  // Here we can perform any function we'd like on the request
-  (request: AxiosRequestConfig) => {
-    // Retrieve the token from local storage
-    const token = localStorage.getItem(TOKEN_KEY)
-
-    // Check if the header property exists
-    if (request.headers) {
-      // Set the Authorization header if it exists
-      request.headers['Authorization'] = `Bearer ${token}`
-    } else {
-      // Create the headers property if it does not exist
-      request.headers = {
-        Authorization: `Bearer ${token}`,
-      }
-    }
-    return request
+export const authProvider: AuthProvider = {
+  login: async () => {
+    // msalInstance.loginRedirect() // Pick the strategy you prefer i.e. redirect or popup
+    console.log('inside login')
+    await msalInstance.handleRedirectPromise();
+if (accounts.length === 0) {
+    // No user signed in
+    msalInstance.loginRedirect();
+}
+    return Promise.resolve("/user")
   },
-)
-
-export const msalInstance = new PublicClientApplication(msalConfig)
-
-msalInstance.addEventCallback(async (event) => {
-  if (event.eventType === EventType.LOGIN_SUCCESS) {
-    const payload: EventPayload = event.payload
-    msalInstance.setActiveAccount(payload as AccountInfo)
-
-    let account = msalInstance.getActiveAccount()
-
-    const request: SilentRequest = {
-      ...loginRequest,
-      account: account!,
-    }
+  register: async () => Promise.resolve(),
+  // resetPassword: async () => Promise.resolve(),
+  updatePassword: async () => Promise.resolve(),
+  logout: async () => Promise.resolve(),
+  checkAuth: async () => {
     try {
-      // Silently acquires an access token which is then attached to a request for API access
-      const response = await msalInstance.acquireTokenSilent(request)
-      console.log('Fetching access token: success')
-      console.log('Scopes', response.scopes)
-      console.log('Token Type', response.tokenType)
-
-      localStorage.setItem(TOKEN_KEY, response.accessToken)
+      if (accounts) {
+        const token = await msalInstance.acquireTokenSilent({
+            scopes: ["User.Read"],
+            redirectUri: "http://localhost:3000/user"
+        });
+        localStorage.setItem(TOKEN_KEY, token.accessToken)
+        return Promise.resolve()
+      } else {
+        return Promise.reject()
+      }
     } catch (e) {
-      msalInstance.acquireTokenPopup(request).then((response) => {
-        localStorage.setItem(TOKEN_KEY, response.accessToken)
-      })
+      return Promise.reject()
     }
-  }
-})
-
-// const { accounts } = useMsal();
-
-  // if (inProgress === "login" || inProgress === "handleRedirect") {
-  //     return <div>Loading...</div>;
-  // }
-
-  // export const account: AccountInfo = accounts[0];
-  // export const request: SilentRequest = {
-  //   ...loginRequest,
-  //   account,
-  // }
-
-
-
-// export const authProvider: AuthProvider = {
-//   login: async () => {
-//     msalInstance.loginRedirect(loginRequest) // Pick the strategy you prefer i.e. redirect or popup
-//     console.log('object :', loginRequest)
+  },
+  checkError: async () => Promise.resolve(),
+  getPermissions: async () => Promise.resolve(),
+//   getUserIdentity: async (): Promise<AccountInfo> => {
+//     if (accounts === null || accounts === undefined) {
+//       return Promise.reject()
+//     }
+//     // return Promise.resolve(accounts)
 //     return Promise.resolve(false)
 //   },
-//   register: async () => Promise.resolve(),
-//   // resetPassword: async () => Promise.resolve(),
-//   updatePassword: async () => Promise.resolve(),
-//   logout: async () => Promise.resolve(),
-//   checkAuth: async () => {
-//     try {
-//       if (account) {
-//         const token = await msalInstance.acquireTokenSilent(request)
-//         localStorage.setItem(TOKEN_KEY, token.accessToken)
-//         return Promise.resolve()
-//       } else {
-//         return Promise.reject()
-//       }
-//     } catch (e) {
-//       return Promise.reject()
-//     }
-//   },
-//   checkError: async () => Promise.resolve(),
-//   getPermissions: async () => Promise.resolve(),
-//   getUserIdentity: async (): Promise<AccountInfo> => {
-//     if (account === null || account === undefined) {
-//       return Promise.reject()
-//     }
-//     return Promise.resolve(account)
-//   },
-// }
+}

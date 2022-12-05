@@ -7,8 +7,9 @@ import { AntdLayout, Button } from "@pankod/refine-antd";
 //     email: string;
 // };
 export const LoginPage = () => {
+    const { mutate: login } = useLogin();
     const SignInButton = () => {
-        const { mutate: login } = useLogin();
+        
 
         // function onSubmit(values: LoginVariables) {
         //     login(values);
